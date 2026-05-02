@@ -1,0 +1,6 @@
+# No generated files are expected in this repo.
+# Keep local/editor clutter out of git.
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
