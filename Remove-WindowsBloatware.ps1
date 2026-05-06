@@ -36,9 +36,13 @@ param(
         '*Ai.Copilot.Provider*',
         '*OfficeHub*',
         '*Clipchamp*',
+        '*LinkedIn*',
         '*Todos*',
         '*Wallet*',
         '*Maps*',
+        '*People*',
+        '*News*',
+        '*Weather*',
         '*XboxApp*',
         '*GamingApp*',
         'Microsoft.XboxGamingOverlay*',
@@ -128,24 +132,27 @@ $skippedPatterns = New-Object System.Collections.Generic.List[string]
 $failedItems = New-Object System.Collections.Generic.List[object]
 
 foreach ($pattern in $PackagePatterns) {
-    Write-Verbose "Processing pattern: $pattern"
+    $displayName = ($pattern -replace '[*?]', '').Trim()
+    if ([string]::IsNullOrWhiteSpace($displayName)) {
+        $displayName = $pattern
+    }
 
     $matchedInstalled = @(Get-MatchingItems -Items $installedPackages -Pattern $pattern -PropertyNames @('Name', 'PackageFullName', 'PackageFamilyName'))
     $matchedProvisioned = @(Get-MatchingItems -Items $provisionedPackages -Pattern $pattern -PropertyNames @('DisplayName', 'PackageName'))
 
     if (-not $matchedInstalled -and -not $matchedProvisioned) {
-        Write-Verbose "No matches found for pattern: $pattern"
+        Write-Output "Cannot find $displayName"
         $skippedPatterns.Add($pattern)
         continue
     }
 
     foreach ($package in $matchedInstalled) {
-        $target = "$($package.Name) ($($package.PackageFullName))"
+        $target = if ($package.Name) { $package.Name } else { $package.PackageFullName }
         if ($PSCmdlet.ShouldProcess($target, 'Remove installed Appx package')) {
             try {
                 Remove-AppxPackage -Package $package.PackageFullName -AllUsers -ErrorAction Stop
                 $removedInstalled.Add($package)
-                Write-Verbose "Removed installed package: $target"
+                Write-Output "Removed $target"
             }
             catch {
                 $failedItems.Add([PSCustomObject]@{
@@ -154,18 +161,18 @@ foreach ($pattern in $PackagePatterns) {
                         Action  = 'Remove-AppxPackage'
                         Error   = $_.Exception.Message
                     })
-                Write-Warning "Failed to remove installed package '$target': $($_.Exception.Message)"
+                Write-Output "Cannot remove $target"
             }
         }
     }
 
     foreach ($package in $matchedProvisioned) {
-        $target = "$($package.DisplayName) ($($package.PackageName))"
+        $target = if ($package.DisplayName) { $package.DisplayName } else { $package.PackageName }
         if ($PSCmdlet.ShouldProcess($target, 'Remove provisioned Appx package')) {
             try {
                 Remove-AppxProvisionedPackage -Online -PackageName $package.PackageName -ErrorAction Stop | Out-Null
                 $removedProvisioned.Add($package)
-                Write-Verbose "Removed provisioned package: $target"
+                Write-Output "Removed $target"
             }
             catch {
                 $failedItems.Add([PSCustomObject]@{
@@ -174,7 +181,7 @@ foreach ($pattern in $PackagePatterns) {
                         Action  = 'Remove-AppxProvisionedPackage'
                         Error   = $_.Exception.Message
                     })
-                Write-Warning "Failed to remove provisioned package '$target': $($_.Exception.Message)"
+                Write-Output "Cannot remove $target"
             }
         }
     }
@@ -190,16 +197,10 @@ if (-not $SkipRegistryHardening) {
     Set-RegistryDwordValue -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -Name 'SilentInstalledAppsEnabled' -Value 0
 }
 
-$summary = [PSCustomObject]@{
-    InstalledPackagesRemoved  = $removedInstalled.Count
-    ProvisionedPackagesRemoved = $removedProvisioned.Count
-    PatternsSkipped           = $skippedPatterns.ToArray()
-    Failures                  = $failedItems.ToArray()
-    RegistryHardeningApplied  = -not $SkipRegistryHardening
-}
-
-$summary
-
-if ($failedItems.Count -gt 0) {
-    Write-Warning "Completed with $($failedItems.Count) failure(s). Review the Failures property in the output summary."
-}
+Write-Verbose ("Completed. Installed removed: {0}; provisioned removed: {1}; skipped: {2}; failures: {3}; registry hardening: {4}" -f `
+    $removedInstalled.Count,
+    $removedProvisioned.Count,
+    $skippedPatterns.Count,
+    $failedItems.Count,
+    (-not $SkipRegistryHardening)
+)
