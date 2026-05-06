@@ -4,9 +4,25 @@ A small set of PowerShell utilities for Windows administration.
 
 ## Copy/paste commands
 
-- `Remove-WindowsBloatware.ps1` — run as Administrator: `$u='https://raw.githubusercontent.com/MasonAuchy/windows-admin-scripts/main/Remove-WindowsBloatware.ps1';$p=Join-Path $env:TEMP 'Remove-WindowsBloatware.ps1';iwr $u -UseBasicParsing -OutFile $p;powershell.exe -NoProfile -ExecutionPolicy Bypass -File $p -Verbose`
-- `Get-SystemUptime.ps1` — `$u='https://raw.githubusercontent.com/MasonAuchy/windows-admin-scripts/main/Get-SystemUptime.ps1';$p=Join-Path $env:TEMP 'Get-SystemUptime.ps1';iwr $u -UseBasicParsing -OutFile $p;powershell.exe -NoProfile -ExecutionPolicy Bypass -File $p`
-- `List-AppxPackages.ps1` — `$u='https://raw.githubusercontent.com/MasonAuchy/windows-admin-scripts/main/List-AppxPackages.ps1';$p=Join-Path $env:TEMP 'List-AppxPackages.ps1';iwr $u -UseBasicParsing -OutFile $p;powershell.exe -NoProfile -ExecutionPolicy Bypass -File $p`
+### Remove-WindowsBloatware.ps1
+
+> Run PowerShell as Administrator.
+
+```powershell
+$u='https://raw.githubusercontent.com/MasonAuchy/windows-admin-scripts/main/Remove-WindowsBloatware.ps1';$p=Join-Path $env:TEMP 'Remove-WindowsBloatware.ps1';iwr $u -UseBasicParsing -OutFile $p;powershell.exe -NoProfile -ExecutionPolicy Bypass -File $p -Verbose
+```
+
+### Get-SystemUptime.ps1
+
+```powershell
+$u='https://raw.githubusercontent.com/MasonAuchy/windows-admin-scripts/main/Get-SystemUptime.ps1';$p=Join-Path $env:TEMP 'Get-SystemUptime.ps1';iwr $u -UseBasicParsing -OutFile $p;powershell.exe -NoProfile -ExecutionPolicy Bypass -File $p
+```
+
+### List-AppxPackages.ps1
+
+```powershell
+$u='https://raw.githubusercontent.com/MasonAuchy/windows-admin-scripts/main/List-AppxPackages.ps1';$p=Join-Path $env:TEMP 'List-AppxPackages.ps1';iwr $u -UseBasicParsing -OutFile $p;powershell.exe -NoProfile -ExecutionPolicy Bypass -File $p
+```
 
 ## Notes
 
