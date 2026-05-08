@@ -9,7 +9,7 @@ A small set of PowerShell utilities for Windows administration.
 > Run PowerShell as Administrator.
 
 ```powershell
-$u='https://raw.githubusercontent.com/MasonAuchy/windows-admin-scripts/main/Remove-WindowsBloatware.ps1';$p=Join-Path $env:TEMP 'Remove-WindowsBloatware.ps1';iwr $u -UseBasicParsing -OutFile $p;powershell.exe -NoProfile -ExecutionPolicy Bypass -File $p -Verbose
+$u='https://raw.githubusercontent.com/MasonAuchy/windows-admin-scripts/main/Remove-WindowsBloatware.ps1';$p=Join-Path $env:TEMP 'Remove-WindowsBloatware.ps1';iwr $u -UseBasicParsing -OutFile $p;powershell.exe -NoProfile -ExecutionPolicy Bypass -File $p
 ```
 
 ### Get-SystemUptime.ps1
@@ -27,4 +27,4 @@ $u='https://raw.githubusercontent.com/MasonAuchy/windows-admin-scripts/main/List
 ## Notes
 
 - These scripts are meant for Windows PowerShell / PowerShell 7 on Windows.
-- For `Remove-WindowsBloatware.ps1`, add `-WhatIf` to the final command if you want a dry run, or `-SkipRegistryHardening` if you want to skip the registry changes.
+- `Remove-WindowsBloatware.ps1` removes the listed Appx packages one at a time, logs each action to the console, then writes the registry settings.
